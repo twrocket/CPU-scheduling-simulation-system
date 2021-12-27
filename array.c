@@ -1,5 +1,28 @@
 #include<stdio.h>
 #include<stdlib.h>
+#define SIZE 100
+
+typedef struct Data{
+        char name[20];//程序的名字
+        int arrive_time;//它的抵達時間
+        int burst_time;//執行完畢程序所剩的時間（變數,隨著模擬被執行而一直減少）
+        int burst_time_const;//執行完畢程序所需的時間（它是常數）
+        int turnaround_time;//週轉時間
+        int response_time;//響應時間
+        float throughput;//用於儲存從開始（時間＝零）到這個程序執行完畢的當下,它當下的平均吞吐量
+        int time;//用於儲存它執行完畢當下的時間
+}dtype;
+typedef struct qe{
+        int count;//有幾筆queue
+        dtype* array;//指向dtype的指標
+        int front;//頭的位置
+        int rear;//尾的位置
+}qetype;
+
+void enqueue(qetype*,dtype);//equeue fuction
+dtype dequeue(qetype*);//dequeue fuction
+dtype* front(qetype*);//回傳front所在位置的指標
+qetype* creat(); //malloc qetype的struct,並進行初始化
 
 qetype* read_file();//讀取檔案資料,並malloc空間來儲存
 qetype* FCFS(qetype*,float*);//FCFS模擬
@@ -251,4 +274,38 @@ qetype* read_file()
                 enqueue(qe,d);
         }
         return qe;
+}
+void enqueue(qetype* qet,dtype d)
+{
+        if(qet->count==0){
+                qet->front = 0;
+                qet->rear = 0;
+                *(qet->array) = d;
+        }
+        else{
+                qet->rear++;
+                *((qet->array)+(qet->rear)) = d;
+        }
+        qet->count++;
+}
+dtype dequeue(qetype* qet)
+{
+        dtype d;
+        d = *((qet->array)+(qet->front));
+        qet->front++;
+        qet->count--;
+        return d;
+}
+dtype* front(qetype* qet)
+{
+        return (qet->array)+(qet->front);
+}
+qetype* creat()
+{
+        qetype* qet;
+        qet = malloc(sizeof(qetype));
+        qet->count = 0;
+        qet->front = -1;
+        qet->rear = -1;
+        qet->array = malloc(sizeof(dtype)*SIZE);
 }
